@@ -1,0 +1,6 @@
+FROM python:3
+LABEL version="0.0.1"
+LABEL maintainer="shubham@gmail.com"
+WORKDIR /usr/src/app
+COPY code.py /usr/src/app/
+CMD [ "python", "./code.py" ]
