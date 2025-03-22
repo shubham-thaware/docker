@@ -1,46 +1,48 @@
-#wordpress with mysql config
-version: '3'
+version: '3' #Version of YML file
+
 services:
-#Database service for backend
+  #Database service for backend
   backend:
-        image: mysql:8.0
-        container_name: mysql-db-backend
-        restart: always
-         # You can add environment variables for mysql here if needed
-        environment:
-          MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-          MYSQL_DATABASE: ${MYSQL_DATABASE}
-          MYSQL_USER: ${MYSQL_USER}
-          MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-        volumes:
-          - db_vol:/var/lib/mysql
-        networks:
-          - wordpress-network
-        ports:
-          - "3306:3306"
-#Wordpress service for frontend
-  frontend:
-         depends_on:
-           - backend
-         image: wordpress:latest
-         container_name: wordpress-frontend
-         restart: always
-          # You can add environment variables for WordPress here if needed
-         environment:
-           WORDPRESS_DB_HOST: backend:3306
-           WORDPRESS_DB_USER: ${MYSQL_USER}
-           WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
-         volumes:
-           - wd_vol:/var/www/html
-         ports:
-           - "8080:80"
-         networks:
-           - wordpress-network
+    image: mysql:latest
+    container_name: mysql-container
+    restart: always
+    # You can add environment variables for mysql here if needed
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - wordpress_network
+    ports:
+      - "3306:3306"
+
+  #Wordpress service for frontend
+  wordpress:
+    depends_on:
+      - backend
+    image: wordpress:latest
+    container_name: wordpress-container
+    restart: always
+    # You can add environment variables for WordPress here if needed
+    environment:
+      WORDPRESS_DB_HOST: backend:3306
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - wordpress_data:/var/www/html
+    ports:
+      - "8080:80"
+    networks:
+      - wordpress_network
 #creating volumes here
 volumes:
-  db_vol:
-  wd_vol:
+  mysql_data:
+  wordpress_data:
 #creating network here
 networks:
-  wordpress-network:
+  wordpress_network:
     driver: bridge
+  
